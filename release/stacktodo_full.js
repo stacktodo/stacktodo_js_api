@@ -2069,7 +2069,7 @@
 
 				var flash;
 				slackForm.submit(Q.container(), function() {
-					flash = templates.success(nil, 'Awesome your feedback has been sent!');
+					flash = templates.success(null, 'Awesome your feedback has been sent!');
 					D.iter(Q.inputs(), function(e) {
 						if (e.getAttribute('data-autoblank') !== 'false') {
 							D.removeValue([e]);
