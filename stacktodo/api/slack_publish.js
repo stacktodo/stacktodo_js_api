@@ -162,7 +162,6 @@
 								return;
 							}
 							// Enhance the post
-							response.html = response.html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
 							response.id = head.id;
 							response.url = head.url;
 							response.index = head.index;

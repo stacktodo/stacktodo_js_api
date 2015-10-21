@@ -1,70 +1,8 @@
 /**
-* Stacktodo JavaScript API. Version 0.0.2.
+* Stacktodo JavaScript API. Version 0.0.3.
 * https://github.com/stacktodo/stacktodo_js_api
 * MIT License
 */
-
-(function(ns) {
-	
-	/**
-	* AJAX Utility
-	* Wraps up all the ajax stuff into a simple wrapper
-	*/
-	var AJAX = function() {
-		var self = this;
-
-		/********************************************************************************/
-		// GET
-		/********************************************************************************/
-
-		/**
-		* Performs a get on the given endpoint
-		* @param url=/: the url to post to
-		* @param success=undefined: executed on http success with the response
-		* @param failure=undefined: executed on http failure
-		* @param complete=undefined: executed after http success or failure
-		* Returns the xhr object
-		*/
-		self.get = function(options) {
-			options = {
-				url 		: options.url || window.location.href,
-				success 	: options.success || function() {},
-				failure 	: options.failure || function() {},
-				complete 	: options.complete || function() {}
-			};
-
-			var xhr;
-			if (typeof XDomainRequest != 'undefined') {
-				xhr = new XDomainRequest();
-				xhr.open('GET', options.url);
-			} else {
-				xhr = new XMLHttpRequest();
-				xhr.open('GET', options.url, true);
-			}
-
-			xhr.onload = function() {
-				if (xhr.status >= 200 && xhr.status <= 299) {
-					options.success(xhr.responseText, xhr.status, xhr);
-				} else {
-					options.failure(xhr.status, xhr.responseText, xhr);
-				}
-				options.complete();
-		  	};
-
-		  	xhr.onerror = function() {
-		  		options.failure(xhr.status, undefined, xhr);
-		  		options.complete();
-		  	};
-
-			xhr.send();
-			return xhr;
-		};
-	};
-	
-	ns.stacktodo = ns.stacktodo || {};
-	ns.stacktodo.core = ns.stacktodo.core || {};
-	ns.stacktodo.core.ajax = new AJAX();
-})(window);
 (function(ns) {
 	
 	/**
@@ -336,6 +274,149 @@
 	ns.stacktodo = ns.stacktodo || {};
 	ns.stacktodo.core = ns.stacktodo.core || {};
 	ns.stacktodo.core.jsoncors = new JSONCORS();
+})(window);
+(function(ns) {
+	
+	/**
+	* AJAX Utility
+	* Wraps up all the ajax stuff into a simple wrapper
+	*/
+	var AJAX = function() {
+		var self = this;
+
+		/********************************************************************************/
+		// GET
+		/********************************************************************************/
+
+		/**
+		* Performs a get on the given endpoint
+		* @param url=/: the url to post to
+		* @param success=undefined: executed on http success with the response
+		* @param failure=undefined: executed on http failure
+		* @param complete=undefined: executed after http success or failure
+		* Returns the xhr object
+		*/
+		self.get = function(options) {
+			options = {
+				url 		: options.url || window.location.href,
+				success 	: options.success || function() {},
+				failure 	: options.failure || function() {},
+				complete 	: options.complete || function() {}
+			};
+
+			var xhr;
+			if (typeof XDomainRequest != 'undefined') {
+				xhr = new XDomainRequest();
+				xhr.open('GET', options.url);
+			} else {
+				xhr = new XMLHttpRequest();
+				xhr.open('GET', options.url, true);
+			}
+
+			xhr.onload = function() {
+				if (xhr.status >= 200 && xhr.status <= 299) {
+					options.success(xhr.responseText, xhr.status, xhr);
+				} else {
+					options.failure(xhr.status, xhr.responseText, xhr);
+				}
+				options.complete();
+		  	};
+
+		  	xhr.onerror = function() {
+		  		options.failure(xhr.status, undefined, xhr);
+		  		options.complete();
+		  	};
+
+			xhr.send();
+			return xhr;
+		};
+
+		return self;
+	};
+	
+	ns.stacktodo = ns.stacktodo || {};
+	ns.stacktodo.core = ns.stacktodo.core || {};
+	ns.stacktodo.core.ajax = new AJAX();
+})(window);
+(function(ns) {
+	
+	var QS = function() {
+		var self = this;
+
+		/**
+		* Fetches arguments from a url string
+		* @param key: the name of the argument
+		* @param url=window.location.href: the url to get from
+		* @return the value or undefined if it does not exist
+		*/
+		self.urlArg = function(key, url) {
+			url = url || window.location.href;
+			key = key.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+			var regexS = "[\\?&]" + key + "=([^&#]*)";
+			var regex = new RegExp(regexS);
+			var results = regex.exec(url);
+			if(results == null) {
+				return undefined;
+			} else {
+				return decodeURIComponent(results[1]);
+			}
+		};
+
+		return self;
+	};
+	
+	ns.stacktodo = ns.stacktodo || {};
+	ns.stacktodo.core = ns.stacktodo.core || {};
+	ns.stacktodo.core.qs = new QS();
+})(window);
+(function(ns) {
+	/**
+	* A function that can be used for accessing and identifying slack files
+	*/
+	var SlackFiles = function() {
+		var self = this;
+
+		/**
+		* The unfurl types that the stacktodo server will respond to
+		*/
+		self.UNFURL_TYPES = {
+			IMAGE : 'image',
+			ANY : undefined
+		};
+
+		/**
+		* @param url: the url to test
+		* @return true if the url is a slack url
+		*/
+		self.isSlackFileUrl = function(url) {
+			if (url.indexOf('https://files.slack.com/') === 0) {
+				return true;
+			} else if (url.indexOf('https://slack-files.com/') === 0) {
+				return true;
+			} else if (url.indexOf('https://') === 0 && url.indexOf('slack.com/files/') !== -1) {
+				return true;
+			} else {
+				return false;
+			}
+		};
+
+		/**
+		* Generates an unfurl url for the given url
+		* @param url: the url to generate the unfurl url for
+		* @param allowedType=undefined: the restriction on type of url to respond for
+		* @return a url that can be used in the dom for fetching the file
+		*/
+		self.generateUnfurlUrl = function(url, allowedType) {
+			var query = 'url=' + encodeURIComponent(url);
+			query += allowedType === undefined ? '' : '&allowed=' + encodeURIComponent(allowedType)
+			return 'https://stacktodo.com/api/slack/resource/unfurl/file?' + query
+		};
+
+		return self;
+	};
+
+	ns.stacktodo = ns.stacktodo || {};
+	ns.stacktodo.slackFiles = new SlackFiles();
 })(window);
 (function(ns) {
 	/**
@@ -721,7 +802,6 @@
 								return;
 							}
 							// Enhance the post
-							response.html = response.html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
 							response.id = head.id;
 							response.url = head.url;
 							response.index = head.index;
@@ -815,4 +895,4 @@
 	ns.stacktodo.SlackPublish = SlackPublish;
 })(window);
 
-//# sourceMappingURL=stacktodo.js.map
+//# sourceMappingURL=stacktodo_api.js.map

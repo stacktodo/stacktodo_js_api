@@ -53,6 +53,8 @@
 			xhr.send();
 			return xhr;
 		};
+
+		return self;
 	};
 	
 	ns.stacktodo = ns.stacktodo || {};
