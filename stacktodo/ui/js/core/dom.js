@@ -126,12 +126,13 @@
 		self.removeValue = function(elems) {
 			if (!elems) { return elems; }
 			for (var i = 0; i < elems.length; i++) {
-				if (elems[i].tagName === 'select') {
+				if (elems[i].tagName === 'SELECT') {
 					self.removeAttr(elems[i].querySelectorAll('option'), 'selected');
-				} else if (elems[i].tagName === 'textarea') {
+				} else if (elems[i].tagName === 'TEXTAREA') {
 					elems[i].value = '';
-				} else if (elems[i].tagName === 'input') {
+				} else if (elems[i].tagName === 'INPUT') {
 					switch(elems[i].type) {
+						case 'submit': break;
 						case 'radio':
 						case 'checkbox':
 							elems[i].removeAttribute('checked');

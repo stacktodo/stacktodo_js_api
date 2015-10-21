@@ -2,7 +2,7 @@
   "author": "Stacktodo",
   "name": "stacktodo_js_api",
   "description": "The official Stacktodo JavaScript Web API",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "homepage": "https://stacktodo.com/",
   "repository": {
     "type": "git",

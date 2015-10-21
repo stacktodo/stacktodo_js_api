@@ -26,5 +26,20 @@ exports.config = {
   modules: {
     wrapper: false,
     definition: false
+  },
+  onCompile: function(files) {
+    var package_json = require('./package.json');
+    var fs = require('fs');
+    for (var i = 0, f; f = files[i]; i++) {
+      var data = [
+        '/**',
+        '* Stacktodo JavaScript API. Version ' + package_json.version + '.',
+        '* ' + package_json.repository.url,
+        '* MIT License',
+        '*/',
+        fs.readFileSync(f.path, 'utf8')
+      ].join('\n');
+      fs.writeFileSync(f.path, data);
+    }
   }
 };

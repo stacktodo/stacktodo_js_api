@@ -1,5 +1,5 @@
 /**
-* Stacktodo JavaScript API. Version 0.0.3.
+* Stacktodo JavaScript API. Version 0.0.4.
 * https://github.com/stacktodo/stacktodo_js_api
 * MIT License
 */
